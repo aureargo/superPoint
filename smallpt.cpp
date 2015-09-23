@@ -28,46 +28,6 @@ bool isIntersect(float t)
 
 #include "primitive.h"
 
-	// WARRING: works only if r.d is normalized
-float intersect (const Ray & ray, const Sphere &sphere)
-{				// returns distance, 0 if nohit
-	glm::vec3 op = sphere.center - ray.origin;		// Solve t^2*d.d + 2*t*(o-p).d + (o-p).(o-p)-R^2 = 0
-	float t, b = glm:: dot(ray.direction, op), det =
-		b * b - glm::dot(op, op) + sphere.radius * sphere.radius;
-	if (det < 0)
-		return noIntersect;
-	else
-		det = std::sqrt (det);
-	return (t = b - det) >= 0 ? t : ((t = b + det) >= 0 ? t : noIntersect);
-}
-
-float intersect(const Ray & ray, const Triangle &triangle)
-{
-	auto e1 = triangle.v1 - triangle.v0;
-	auto e2 = triangle.v2 - triangle.v0;
-
-	auto h = glm::cross(ray.direction, e2);
-	auto a = glm::dot(e1, h);
-
-	auto f = 1.f / a;
-	auto s = ray.origin - triangle.v0;
-
-	auto u = f * glm::dot(s, h);
-	auto q = glm::cross(s, e1);
-	auto v = f * glm::dot(ray.direction, q);
-	auto t = f * glm::dot(e2, q);
-
-	if(std::abs(a) < 0.00001)
-		return noIntersect;
-	if(u < 0 || u > 1)
-		return noIntersect;
-	if(v < 0 || (u+v) > 1)
-		return noIntersect;
-	if(t < 0)
-		return noIntersect;
-
-	return t;
-}
 
 /*************************************************************/
 
@@ -111,6 +71,8 @@ int toInt (float x){
 	return int (std::pow (glm::clamp (x, 0.f, 1.f), 1.f / 2.2f) * 255 + .5);
 }
 
+#define INTERSECT_MIN 0.01f
+
 // WARNING: ASSUME NORMALIZED RAY
 // Compute the intersection ray / scene.
 // Returns true if intersection
@@ -126,7 +88,7 @@ Object* intersect (const Ray & r, float &t)
 	{
 		float d = object->intersect(r);
         //if (isIntersect(d) && d < t)
-        if (d < t && d > 0.0f)  //pas d>=0.0f pour permettre la diffusion à partir d'un objet de la scène sans que la fonction retourne le même objet
+        if (d < t && d > INTERSECT_MIN)  //pas d>=0.0f pour permettre la diffusion à partir d'un objet de la scène sans que la fonction retourne le même objet
         {
 			t = d;
 			ret = object.get();
@@ -231,19 +193,31 @@ glm::vec3 radiance (const Ray & r, int radMax = 10)
 
 
     glm::vec3 pos = r.origin + r.direction*d;
-    obj->reposition(pos);
+    //obj->reposition(pos);
     glm::vec3 n = obj->getNormal(pos);
 
     glm::vec3 color = obj->direct(pos, n, scene::light);
     if(radMax > 0)
         color += obj->indirect(r, pos, n, scene::light, radMax-1);
 
+
+
+
+
+
+
+
+
+
+
+
+
     return color;
 
 
 
 
-    Ray rl = {scene::light, normalize(pos-scene::light)};
+    /*Ray rl = {scene::light, normalize(pos-scene::light)};
 
     float d2;
     const Object* obj2 = intersect(rl, d2);
@@ -258,16 +232,6 @@ glm::vec3 radiance (const Ray & r, int radMax = 10)
     glm::vec3 vl = -rl.direction;
     float cosT = fabsf(glm::dot(vl, n));
     float diffuse = cosT/pi;
-
-    /////////////////////////////////////////////////
-    //diffusion de la lumière
-    if(diffuse > 0 && radMax > 0)
-    {
-        glm::vec3 newDir = -reflect(r.direction,n);
-        glm::vec3 newColor = radiance(Ray{pos, newDir}, radMax-1);
-        //newColor *= diffuse;
-        c += newColor;
-    }
 
     /////////////////////////////////////////////////
 
@@ -285,7 +249,7 @@ glm::vec3 radiance (const Ray & r, int radMax = 10)
         mini = (diffuse+AMBIANTE+speculaire);
     else if (maxi < (diffuse+AMBIANTE+speculaire))
         maxi = (diffuse+AMBIANTE+speculaire);
-    return c;
+    return c;*/
 }
 
 /*************************************************************/
