@@ -21,3 +21,10 @@ TEMPLATE = app
 
 SOURCES += \
     smallpt.cpp
+
+HEADERS += \
+    Object.h \
+    scene.h \
+    convolution.h \
+    material.h \
+    primitive.h

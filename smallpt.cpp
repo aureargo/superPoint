@@ -26,29 +26,7 @@ bool isIntersect(float t)
 	return t < noIntersect;
 }
 
-struct Ray
-{
-	const glm::vec3 origin, direction;
-};
-
-struct Sphere
-{
-	const float radius;
-	const glm::vec3 center;
-
-    glm::vec3 getNormal(const glm::vec3& p) const    {
-        return glm::normalize(p-center);
-    }
-};
-
-struct Triangle
-{
-	const glm::vec3 v0, v1, v2;
-
-    glm::vec3 getNormal(const glm::vec3& p) const    {
-        return glm::normalize(glm::cross(v1-v0, v2-v0));
-    }
-};
+#include "primitive.h"
 
 	// WARRING: works only if r.d is normalized
 float intersect (const Ray & ray, const Sphere &sphere)
@@ -93,127 +71,12 @@ float intersect(const Ray & ray, const Triangle &triangle)
 
 /*************************************************************/
 
-struct Diffuse  {
-	const glm::vec3 color;
-};
-
-struct Glass    {
-	const glm::vec3 color;
-};
-
-struct Mirror   {
-	const glm::vec3 color;
-};
-
-/*************************************************************/
-
-template<typename T>
-glm::vec3 albedo(const T &t)
-{
-	return t.color;
-}
-
-/*************************************************************/
-
-struct Object
-{
-	virtual float intersect(const Ray &r) const = 0;
-	virtual glm::vec3 albedo() const = 0;
-    virtual glm::vec3 getNormal(const glm::vec3& pos) const = 0;
-    //cos(theta)/pi
-
-};
-
-template<typename P, typename M>
-struct ObjectTpl final : Object
-{
-	ObjectTpl(const P &_p, const M &_m)
-		:primitive(_p), material(_m)
-	{}
-
-	float intersect(const Ray &ray) const	{
-		return ::intersect(ray, primitive);
-	}
-
-	glm::vec3 albedo() const	{
-		return ::albedo(material);
-	}
-
-    glm::vec3 getNormal(const glm::vec3& p) const    {
-        return primitive.getNormal(p);
-    }
-
-	const P &primitive;
-	const M &material;
-};
-
-
-template<typename P, typename M>
-std::unique_ptr<Object> makeObject(const P&p, const M&m){
-	return std::unique_ptr<Object>(new ObjectTpl<P, M>{p, m});
-}
+#include "Object.h"
 
 /*************************************************************/
 
 // Scene
-namespace scene
-{
-	// Primitives
-
-	// Left Wall
-    const Triangle leftWallA{{0, 0, 0}, {0, 100, 0}, {0, 0, 150}};
-	const Triangle leftWallB{{0, 100, 150}, {0, 100, 0}, {0, 0, 150}};
-
-	// Right Wall
-	const Triangle rightWallA{{100, 0, 0}, {100, 100, 0}, {100, 0, 150}};
-	const Triangle rightWallB{{100, 100, 150}, {100, 100, 0}, {100, 0, 150}};
-
-	// Back wall
-	const Triangle backWallA{{0, 0, 0}, {100, 0, 0}, {100, 100, 0}};
-	const Triangle backWallB{{0, 0, 0}, {0, 100, 0}, {100, 100, 0}};
-
-	// Bottom Floor
-	const Triangle bottomWallA{{0, 0, 0}, {100, 0, 0}, {100, 0, 150}};
-	const Triangle bottomWallB{{0, 0, 0}, {0, 0, 150}, {100, 0, 150}};
-
-	// Top Ceiling
-	const Triangle topWallA{{0, 100, 0}, {100, 100, 0}, {0, 100, 150}};
-	const Triangle topWallB{{100, 100, 150}, {100, 100, 0}, {0, 100, 150}};
-
-	const Sphere leftSphere{16.5, glm::vec3 {27, 16.5, 47}};
-	const Sphere rightSphere{16.5, glm::vec3 {73, 16.5, 78}};
-
-	const glm::vec3 light{50, 70, 81.6};
-
-	// Materials
-	const Diffuse white{{.75, .75, .75}};
-	const Diffuse red{{.75, .25, .25}};
-	const Diffuse blue{{.25, .25, .75}};
-
-	const Glass glass{{.9, .1, .9}};
-	const Mirror mirror{{.9, .9, .1}};
-
-	// Objects
-	// Note: this is a rather convoluted way of initialising a vector of unique_ptr ;)
-	const std::vector<std::unique_ptr<Object>> objects = [] (){
-		std::vector<std::unique_ptr<Object>> ret;
-		ret.push_back(makeObject(backWallA, white));
-		ret.push_back(makeObject(backWallB, white));
-		ret.push_back(makeObject(topWallA, white));
-		ret.push_back(makeObject(topWallB, white));
-		ret.push_back(makeObject(bottomWallA, white));
-		ret.push_back(makeObject(bottomWallB, white));
-		ret.push_back(makeObject(rightWallA, blue));
-		ret.push_back(makeObject(rightWallB, blue));
-		ret.push_back(makeObject(leftWallA, red));
-		ret.push_back(makeObject(leftWallB, red));
-
-		ret.push_back(makeObject(leftSphere, mirror));
-		ret.push_back(makeObject(rightSphere, glass));
-
-		return ret;
-	}();
-}
+#include "scene.h"
 
 /*************************************************************/
 
@@ -263,7 +126,7 @@ Object* intersect (const Ray & r, float &t)
 	{
 		float d = object->intersect(r);
         //if (isIntersect(d) && d < t)
-        if (d < t && d >= 0.0f)
+        if (d < t && d > 0.0f)  //pas d>=0.0f pour permettre la diffusion à partir d'un objet de la scène sans que la fonction retourne le même objet
         {
 			t = d;
 			ret = object.get();
@@ -334,21 +197,52 @@ glm::vec3 sample_sphere(float r, float u, float v, float &pdf, const glm::vec3& 
 	return sample_p * r;
 }
 
+
+
 /*************************************************************/
-#define SQR_PRECISION 0.00390625f
-#define AMBIANTE 0.03125f
+#define SQR_PRECISION 0.1f
+#define AMBIANTE 0.0f
+//0.03125f
 #define BRILLANCE 16
 
 float mini = 1000, maxi = -1000;
 
-glm::vec3 radiance (const Ray & r)
+bool aLaLumiere(const glm::vec3& p, const glm::vec3& l)
+{
+    float sqrdist = glm::distance2(p,l);
+
+    Ray rl = {l, normalize(p-l)};
+
+    float d2;
+    const Object* obj2 = intersect(rl, d2);
+
+    if(obj2 == nullptr || fabsf(d2*d2-sqrdist) > SQR_PRECISION)
+        return false;
+    return true;
+}
+
+glm::vec3 radiance (const Ray & r, int radMax = 10)
 {
     float d;
     const Object* obj = intersect(r, d);
     if(obj == nullptr)
         return glm::vec3(0,0,0);
 
+
+
     glm::vec3 pos = r.origin + r.direction*d;
+    obj->reposition(pos);
+    glm::vec3 n = obj->getNormal(pos);
+
+    glm::vec3 color = obj->direct(pos, n, scene::light);
+    if(radMax > 0)
+        color += obj->indirect(r, pos, n, scene::light, radMax-1);
+
+    return color;
+
+
+
+
     Ray rl = {scene::light, normalize(pos-scene::light)};
 
     float d2;
@@ -356,14 +250,28 @@ glm::vec3 radiance (const Ray & r)
 
     float d3 = glm::distance2(pos, rl.origin+rl.direction*d2);
 
-    const float div = 2+AMBIANTE;
+    const float div = 2;    //2+AMBIANTE;
     glm::vec3 c = obj->albedo();
     if(obj2 == nullptr || d3 > SQR_PRECISION)
         return (c*AMBIANTE)/div;
 
-    glm::vec3 n = obj->getNormal(pos);
     glm::vec3 vl = -rl.direction;
-    float diffuse = fabsf(glm::dot(vl, n));
+    float cosT = fabsf(glm::dot(vl, n));
+    float diffuse = cosT/pi;
+
+    /////////////////////////////////////////////////
+    //diffusion de la lumière
+    if(diffuse > 0 && radMax > 0)
+    {
+        glm::vec3 newDir = -reflect(r.direction,n);
+        glm::vec3 newColor = radiance(Ray{pos, newDir}, radMax-1);
+        //newColor *= diffuse;
+        c += newColor;
+    }
+
+    /////////////////////////////////////////////////
+
+
     //glm::dot((glm::abs(glm::dot(n,vl)*2.f*n) - vl)
     float speculaire = fabsf(pow(glm::dot(reflect(vl,n),-r.direction), BRILLANCE));
 
@@ -384,54 +292,7 @@ glm::vec3 radiance (const Ray & r)
 /*************************************************************/
 /*************************************************************/
 
-std::vector<glm::vec3> convolution(const std::vector<glm::vec3>& colors, int h, int w)
-{
-    std::vector<glm::vec3> colors2(colors);
-    for(int y = 0;  y < h;  y++)
-    {
-        for(int x = 0;  x < w;  x++)
-        {
-            int i = y * w + x;
-            float div = 8;
-            colors2[i] = colors[i]*div;
-            if(y > 0)
-            {
-                if(x > 0)   {
-                    colors2[i] += colors[(y-1)*w + (x-1)];
-                    div++;
-                }
-                colors2[i] += colors[(y-1)*w + x];
-                div++;
-                if(x < w-1) {
-                    colors2[i] += colors[(y-1)*w + (x+1)];
-                }
-            }
-            if(x > 0)   {
-                colors2[i] += colors[y*w + (x-1)];
-                div++;
-            }
-            if(x < w-1) {
-                colors2[i] += colors[y*w + (x+1)];
-                div++;
-            }
-            if(y < h-1)
-            {
-                if(x > 0)   {
-                    colors2[i] += colors[(y+1)*w + (x-1)];
-                    div++;
-                }
-                colors2[i] += colors[(y+1)*w + x];
-                div++;
-                if(x < w-1) {
-                    colors2[i] += colors[(y+1)*w + (x+1)];
-                    div++;
-                }
-            }
-            colors2[i] /= div;
-        }
-    }
-    return colors2;
-}
+#include "convolution.h"
 
 /*************************************************************/
 
@@ -473,7 +334,7 @@ int main (int, char **)
     }
 
     //convolution
-    for(int i = 0;  i < 4;  i++)
+    for(int i = 0;  i < 0;  i++)
         colors = convolution(colors, h, w);
 
 	{
