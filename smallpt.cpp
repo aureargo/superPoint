@@ -228,7 +228,7 @@ bool aLaLumiere(const glm::vec3& p, const glm::vec3& l)
     return true;
 }
 
-glm::vec3 radiance (const Ray & r, int radMax = 4)
+glm::vec3 radiance (const Ray & r, const int radMax = 5)
 {
     float d;
     const Object* obj = intersect(r, d);
@@ -322,10 +322,13 @@ int main (int, char **)
 
 	glm::mat4 screenToRay = glm::inverse(camera);
 
+    #pragma omp parallel for
 	for (int y = 0; y < h; y++)
     {
 		std::cerr << "\rRendering: " << 100 * y / (h - 1) << "%";
 
+
+        #pragma omp parallel for
 		for (unsigned short x = 0; x < w; x++)
 		{
 			glm::vec4 p0 = screenToRay * glm::vec4{float(x), float(h - y), 0.f, 1.f};
@@ -335,8 +338,17 @@ int main (int, char **)
 			glm::vec3 pp1 = glm::vec3(p1 / p1.w);
 
 			glm::vec3 d = glm::normalize(pp1 - pp0);
-
-            glm::vec3 r = radiance (Ray{pp0, d});
+            glm::vec3 r(0,0,0);
+            const unsigned int nbRayons = 8;
+            for(unsigned int i = 0; i < nbRayons;  i++)
+            {
+                glm::vec3 d2(sample_cos(random_u(),random_u(), d));
+                d2 /= (float)w;
+                d2 += d;
+                d2 = glm::normalize(d2);
+                r += radiance (Ray{pp0, d2}, 100);
+            }
+            r /= 8;
             colors[y * w + x] += glm::clamp(r, glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f)) * 0.25f;
 		}
     }

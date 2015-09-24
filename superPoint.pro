@@ -16,6 +16,9 @@ CONFIG  += c++11
 
 INCLUDEPATH += C:/librairie/glm
 
+QMAKE_CXXFLAGS += -fopenmp
+LIBS += -fopenmp
+
 TEMPLATE = app
 
 

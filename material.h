@@ -1,9 +1,9 @@
 #ifndef MATERIAL_H
 #define MATERIAL_H
 
-#include "smallpt.cpp"
 
 #define NOIR glm::vec3(0.f, 0.f, 0.f)
+#define NB_RAYONS_DIFFUS 1
 
 bool aLaLumiere(const glm::vec3& p, const glm::vec3& l);
 glm::vec3 radiance (const Ray & r, int radMax);
@@ -27,13 +27,26 @@ struct Diffuse  {
     {
         //glm::vec3 w = reflect(-cam.direction, n);
         glm::vec3 c(0.f,0.f,0.f);
-        for(int i = 0;  i < 10; i++)
+        float pdf = glm::dot(n, cam.direction);   // normalement glm::dot(n, -cam.direction) mais on inverse tout après
+        glm::vec3 n2;
+        if(pdf < 0)
         {
-            glm::vec3 w(sample_cos(random_u(),random_u(), n));
-            c += radiance(Ray{p,w}, radMax-1);
+            n2 = n;
+            //theta = -theta;
+        }
+        else
+        {
+            n2 = -n;
+            //theta = 1/theta;
         }
 
-        return color*(c/20.f);
+        for(int i = 0;  i < NB_RAYONS_DIFFUS; i++)
+        {
+            glm::vec3 w(sample_cos(random_u(),random_u(), n2));
+            c += (radiance(Ray{p,w}, radMax-1)*fabsf(glm::dot(n2,w)));
+        }
+
+        return color*(c/(float)NB_RAYONS_DIFFUS);
 
         return NOIR;
         (void) cam;   (void) p;   (void) n;   (void) l;   (void) radMax;
@@ -46,6 +59,10 @@ struct Glass    {
     const glm::vec3 color;
     glm::vec3 direct(const glm::vec3& p, const glm::vec3& n, const glm::vec3& l) const
     {
+        /*if(!aLaLumiere(p,l))
+            return NOIR;
+        float diffuse = fabsf(glm::dot(n, glm::normalize(l-p))) / pi;
+        return (color * diffuse);*/
         return NOIR;
         (void) p;   (void) n;   (void) l;
     }
@@ -53,10 +70,8 @@ struct Glass    {
     glm::vec3 indirect(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax) const
     {
         glm::vec3 wo;
-        if(!refract(cam.direction, n, 1/1.33, wo))
-            wo = reflect(cam.direction,n);
-        else
-            wo = -wo;
+        if(!refract(-cam.direction, n, 1.33, wo))
+            wo = reflect(-cam.direction,n);
 
 
         glm::vec3 c = radiance(Ray{p, wo}, radMax);
@@ -72,6 +87,10 @@ struct Mirror   {
     const glm::vec3 color;
     glm::vec3 direct(const glm::vec3& p, const glm::vec3& n, const glm::vec3& l) const
     {
+        /*if(!aLaLumiere(p,l))
+            return NOIR;
+        float diffuse = fabsf(glm::dot(n, glm::normalize(l-p))) / pi;
+        return (color * diffuse);*/
         return NOIR;
         (void) p;   (void) n;   (void) l;
     }
