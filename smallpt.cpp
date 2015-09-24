@@ -111,6 +111,8 @@ int toInt (float x){
 	return int (std::pow (glm::clamp (x, 0.f, 1.f), 1.f / 2.2f) * 255 + .5);
 }
 
+#define NEAR_INTERSECT 0.01f
+
 // WARNING: ASSUME NORMALIZED RAY
 // Compute the intersection ray / scene.
 // Returns true if intersection
@@ -126,7 +128,7 @@ Object* intersect (const Ray & r, float &t)
 	{
 		float d = object->intersect(r);
         //if (isIntersect(d) && d < t)
-        if (d < t && d > 0.0f)  //pas d>=0.0f pour permettre la diffusion à partir d'un objet de la scène sans que la fonction retourne le même objet
+        if (d < t && d > NEAR_INTERSECT)  //pas d>=0.0f pour permettre la diffusion à partir d'un objet de la scène sans que la fonction retourne le même objet
         {
 			t = d;
 			ret = object.get();
@@ -200,7 +202,7 @@ glm::vec3 sample_sphere(float r, float u, float v, float &pdf, const glm::vec3& 
 
 
 /*************************************************************/
-#define SQR_PRECISION 0.1f
+#define SQR_PRECISION 0.04f
 #define AMBIANTE 0.0f
 //0.03125f
 #define BRILLANCE 16

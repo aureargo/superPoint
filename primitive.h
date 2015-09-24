@@ -29,10 +29,11 @@ struct Triangle
 
     glm::vec3 getNormal(const glm::vec3& p) const    {
         return glm::normalize(glm::cross(v1-v0, v2-v0));
+        (void) p;
     }
     void reposition(glm::vec3& pos) const
     {
-
+        (void) pos;
     }
 };
 
