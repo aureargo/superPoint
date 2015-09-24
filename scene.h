@@ -1,6 +1,8 @@
 #ifndef SCENE_H
 #define SCENE_H
 
+#include "material.h"
+
 namespace scene
 {
     // Primitives
@@ -35,7 +37,7 @@ namespace scene
     const Diffuse red{{.75, .25, .25}};
     const Diffuse blue{{.25, .25, .75}};
 
-    const Glass glass{{.9, .1, .9}};
+    const Glass glass{{.9, .1, .9}, 1.33};
     const Mirror mirror{{.9, .9, .1}};
 
     // Objects
