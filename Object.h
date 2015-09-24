@@ -12,7 +12,7 @@ struct Object
     virtual glm::vec3 getNormal(const glm::vec3& pos) const = 0;
     virtual glm::vec3 direct(const glm::vec3& p, const glm::vec3& n, const glm::vec3& l) const = 0;
     virtual glm::vec3 indirect(const Ray& c, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax = 10) const = 0;
-    virtual void reposition(glm::vec3& pos) const = 0;
+    virtual void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const = 0;
     //cos(theta)/pi
 
 };
@@ -36,9 +36,9 @@ struct ObjectTpl final : Object
         return primitive.getNormal(p);
     }
 
-    void reposition(glm::vec3& pos) const
+    void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const
     {
-        return primitive.reposition(pos);
+        return primitive.reposition(pos, n, dir, out);
     }
 
 

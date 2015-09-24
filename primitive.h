@@ -14,12 +14,17 @@ struct Sphere
     glm::vec3 getNormal(const glm::vec3& p) const    {
         return glm::normalize(p-center);
     }
-    void reposition(glm::vec3& pos) const
+    void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const
     {
+
         float sqrd = distance2(center, pos);
         float sqrR = radius*radius;
-        if(sqrd < sqrR)
+        if(sqrd < sqrR && out)
             pos *= sqrR/sqrd;
+        else if(sqrd > sqrR && !out)
+            pos *= sqrd/sqrR;
+
+        (void) n;   (void) dir;
     }
 };
 
@@ -31,8 +36,11 @@ struct Triangle
         return glm::normalize(glm::cross(v1-v0, v2-v0));
         (void) p;
     }
-    void reposition(glm::vec3& pos) const
+    void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const
     {
+        if(distance2(n,dir) > 2)
+            out = !out;
+
         (void) pos;
     }
 };

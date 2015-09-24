@@ -1,3 +1,6 @@
+#ifndef SMALLPT_H
+#define SMALLPT_H
+
 // This code is highly based on smallpt
 // http://www.kevinbeason.com/smallpt/
 #include <cmath>
@@ -82,11 +85,13 @@ float intersect(const Ray & ray, const Triangle &triangle)
 
 //thread_local std::default_random_engine generator;
 //thread_local std::uniform_real_distribution<float> distribution(0.0,1.0);
+std::default_random_engine generator;
+std::uniform_real_distribution<float> distribution(0.0,1.0);
 
-/*float random_u()
+float random_u()
 {
 	return distribution(generator);
-}*/
+}
 
 glm::vec3 sample_cos(const float u, const float v, const glm::vec3& n)
 {
@@ -141,7 +146,7 @@ Object* intersect (const Ray & r, float &t)
 // Reflect the ray i along the normal.
 // i should be oriented as "leaving the surface"
 glm::vec3 reflect(const glm::vec3& i, const glm::vec3& n){
-	return n * (glm::dot(n, i)) * 2.f - i;
+    return n * (glm::dot(n, i)) * 2.f - i;
 }
 
 float sin2cos (float x){
@@ -223,7 +228,7 @@ bool aLaLumiere(const glm::vec3& p, const glm::vec3& l)
     return true;
 }
 
-glm::vec3 radiance (const Ray & r, int radMax = 10)
+glm::vec3 radiance (const Ray & r, int radMax = 4)
 {
     float d;
     const Object* obj = intersect(r, d);
@@ -233,8 +238,9 @@ glm::vec3 radiance (const Ray & r, int radMax = 10)
 
 
     glm::vec3 pos = r.origin + r.direction*d;
-    obj->reposition(pos);
     glm::vec3 n = obj->getNormal(pos);
+
+    //obj->reposition(pos, n, r.direction, false);
 
     glm::vec3 color = obj->direct(pos, n, scene::light);
     if(radMax > 0)
@@ -348,3 +354,5 @@ int main (int, char **)
 	}
     std::cout << mini << "   " << maxi << std::endl;
 }
+
+#endif
