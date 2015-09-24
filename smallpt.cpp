@@ -116,7 +116,7 @@ int toInt (float x){
 	return int (std::pow (glm::clamp (x, 0.f, 1.f), 1.f / 2.2f) * 255 + .5);
 }
 
-#define NEAR_INTERSECT 0.01f
+#define NEAR_INTERSECT 0.1f
 
 // WARNING: ASSUME NORMALIZED RAY
 // Compute the intersection ray / scene.
@@ -251,7 +251,7 @@ glm::vec3 radiance (const Ray & r, const int radMax = 5)
 
 
 
-    Ray rl = {scene::light, normalize(pos-scene::light)};
+    /*Ray rl = {scene::light, normalize(pos-scene::light)};
 
     float d2;
     const Object* obj2 = intersect(rl, d2);
@@ -293,7 +293,7 @@ glm::vec3 radiance (const Ray & r, const int radMax = 5)
         mini = (diffuse+AMBIANTE+speculaire);
     else if (maxi < (diffuse+AMBIANTE+speculaire))
         maxi = (diffuse+AMBIANTE+speculaire);
-    return c;
+    return c;*/
 }
 
 /*************************************************************/
@@ -322,7 +322,7 @@ int main (int, char **)
 
 	glm::mat4 screenToRay = glm::inverse(camera);
 
-    #pragma omp parallel for
+    //#pragma omp parallel for
 	for (int y = 0; y < h; y++)
     {
 		std::cerr << "\rRendering: " << 100 * y / (h - 1) << "%";
@@ -339,16 +339,17 @@ int main (int, char **)
 
 			glm::vec3 d = glm::normalize(pp1 - pp0);
             glm::vec3 r(0,0,0);
-            const unsigned int nbRayons = 8;
+            const unsigned int nbRayons = 16;
             for(unsigned int i = 0; i < nbRayons;  i++)
             {
                 glm::vec3 d2(sample_cos(random_u(),random_u(), d));
                 d2 /= (float)w;
                 d2 += d;
                 d2 = glm::normalize(d2);
-                r += radiance (Ray{pp0, d2}, 100);
+                r += radiance (Ray{pp0, d2}, 20);
+            //r += radiance (Ray{pp0, d}, 20);
             }
-            r /= 8;
+            r /= nbRayons;
             colors[y * w + x] += glm::clamp(r, glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f)) * 0.25f;
 		}
     }

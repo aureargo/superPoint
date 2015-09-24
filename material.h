@@ -48,7 +48,7 @@ struct Diffuse  {
 
         return color*(c/(float)NB_RAYONS_DIFFUS);
 
-        return NOIR;
+        //return NOIR;
         (void) cam;   (void) p;   (void) n;   (void) l;   (void) radMax;
     }
 };

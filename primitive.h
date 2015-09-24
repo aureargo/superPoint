@@ -16,14 +16,10 @@ struct Sphere
     }
     void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const
     {
+        float r2 = radius;
+        r2 += (out  ?   0.0001f   :   -0.0001f);
 
-        float sqrd = distance2(center, pos);
-        float sqrR = radius*radius;
-        if(sqrd < sqrR && out)
-            pos *= sqrR/sqrd;
-        else if(sqrd > sqrR && !out)
-            pos *= sqrd/sqrR;
-
+        pos = center + n*r2;
         (void) n;   (void) dir;
     }
 };

@@ -48,7 +48,9 @@ struct ObjectTpl final : Object
     }
     glm::vec3 indirect(const Ray& c, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax) const
     {
-        return material.indirect(c, p, n, l, radMax);
+        glm::vec3 p2 = p;
+        reposition(p2,n,c.direction,false);
+        return material.indirect(c, p2, n, l, radMax);
     }
 
 
