@@ -212,7 +212,6 @@ glm::vec3 sample_sphere(float r, float u, float v, float &pdf, const glm::vec3& 
 //0.03125f
 #define BRILLANCE 16
 
-float mini = 1000, maxi = -1000;
 
 bool aLaLumiere(const glm::vec3& p, const glm::vec3& l)
 {
@@ -249,49 +248,6 @@ glm::vec3 radiance (const Ray & r, const int radMax = 5)
 
 
 
-    /*Ray rl = {scene::light, normalize(pos-scene::light)};
-
-    float d2;
-    const Object* obj2 = intersect(rl, d2);
-
-    float d3 = glm::distance2(pos, rl.origin+rl.direction*d2);
-
-    const float div = 2;    //2+AMBIANTE;
-    glm::vec3 c = obj->albedo();
-    if(obj2 == nullptr || d3 > SQR_PRECISION)
-        return (c*AMBIANTE)/div;
-
-    glm::vec3 vl = -rl.direction;
-    float cosT = fabsf(glm::dot(vl, n));
-    float diffuse = cosT/pi;
-
-    /////////////////////////////////////////////////
-    //diffusion de la lumière
-    if(diffuse > 0 && radMax > 0)
-    {
-        glm::vec3 newDir = -reflect(r.direction,n);
-        glm::vec3 newColor = radiance(Ray{pos, newDir}, radMax-1);
-        //newColor *= diffuse;
-        c += newColor;
-    }
-
-    /////////////////////////////////////////////////
-
-
-    //glm::dot((glm::abs(glm::dot(n,vl)*2.f*n) - vl)
-    float speculaire = fabsf(pow(glm::dot(reflect(vl,n),-r.direction), BRILLANCE));
-
-
-    if(diffuse >= 1.0)
-        std::cout << diffuse << std::endl;
-    c *= (diffuse+AMBIANTE+speculaire)/div;
-
-
-    if(mini > (diffuse+AMBIANTE+speculaire))
-        mini = (diffuse+AMBIANTE+speculaire);
-    else if (maxi < (diffuse+AMBIANTE+speculaire))
-        maxi = (diffuse+AMBIANTE+speculaire);
-    return c;*/
 }
 
 /*************************************************************/
@@ -319,6 +275,7 @@ int main (int, char **)
 		;
 
 	glm::mat4 screenToRay = glm::inverse(camera);
+
 
     int prct, prct2 = -1;
     //#pragma omp parallel for
@@ -349,7 +306,7 @@ int main (int, char **)
                 d2 /= glm::vec3(w,h,w*h);
                 d2 += d;
                 d2 = glm::normalize(d2);
-                r += radiance (Ray{pp0, d2}, 50);
+                r += radiance (Ray{pp0, d2}, 20);
             //r += radiance (Ray{pp0, d}, 20);
             }
             r /= nbRayons;
@@ -367,8 +324,7 @@ int main (int, char **)
 
         for (auto c : colors)
 			f << toInt(c.x) << " " << toInt(c.y) << " " << toInt(c.z) << " ";
-	}
-    std::cout << mini << "   " << maxi << std::endl;
+    }
 }
 
 #endif

@@ -34,14 +34,14 @@ struct Diffuse  {
 
     glm::vec3 indirect(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax) const
     {
+        /*glm::vec3 newDir = reflect(-cam.direction,n);
+        glm::vec3 c = radiance(Ray{p, newDir}, radMax);
+        return c*color;*/
+
         //glm::vec3 w = reflect(-cam.direction, n);
         glm::vec3 c(0.f,0.f,0.f);
-        float pdf = glm::dot(n, cam.direction);   // normalement glm::dot(n, -cam.direction) mais on inverse tout après
-        glm::vec3 n2;
-        if(pdf < 0)
-            n2 = n;
-        else
-            n2 = -n;
+        float angle = glm::dot(n, cam.direction);   // normalement glm::dot(n, -cam.direction) mais on inverse tout après
+        glm::vec3 n2 = (angle < 0    ?   n   :   -n);
 
         for(int i = 0;  i < NB_RAYONS_DIFFUS; i++)
         {
@@ -50,7 +50,6 @@ struct Diffuse  {
         }
 
         return color*(c/(float)NB_RAYONS_DIFFUS);
-
         //return NOIR;
         (void) cam;   (void) p;   (void) n;   (void) l;   (void) radMax;
     }

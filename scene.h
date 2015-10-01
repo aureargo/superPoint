@@ -32,7 +32,7 @@ namespace scene
 
     /*******************************************************/
     const Sphere Sphere3{6.5, glm::vec3 {27, 14.5, 108}};
-    const Sphere Sphere4{22.5, glm::vec3 {73, 64.5, 88}};
+    const Sphere Sphere4{18.5, glm::vec3 {78, 64.5, 88}};
 
     /*******************************************************/
 
@@ -42,9 +42,12 @@ namespace scene
     const Diffuse white{{.75, .75, .75}};
     const Diffuse red{{.75, .25, .25}};
     const Diffuse blue{{.25, .25, .75}};
+    const Diffuse yellow{{.75, .75, .25}};
 
-    const Glass glass{{1,1,1},3.0};    //{{.9, .1, .9}, 1.33};
-    const Mirror mirror{{.9, .9, .1}};
+    const Glass glass{{1,1,1},1.33};
+    const Glass glass2{{1.0, .3, 1.0}, 4.0};
+    const Mirror mirror{{.9, .9, .3}};
+    const Mirror mirror2{{.4, 1.0, .4}};
 
     // Objects
     // Note: this is a rather convoluted way of initialising a vector of unique_ptr ;)
@@ -52,8 +55,8 @@ namespace scene
         std::vector<std::unique_ptr<Object>> ret;
         ret.push_back(makeObject(backWallA, white));
         ret.push_back(makeObject(backWallB, white));
-        ret.push_back(makeObject(topWallA, white));
-        ret.push_back(makeObject(topWallB, white));
+        ret.push_back(makeObject(topWallA, yellow));
+        ret.push_back(makeObject(topWallB, yellow));
         ret.push_back(makeObject(bottomWallA, white));
         ret.push_back(makeObject(bottomWallB, white));
         ret.push_back(makeObject(rightWallA, blue));
@@ -63,8 +66,8 @@ namespace scene
 
         ret.push_back(makeObject(leftSphere, mirror));
         ret.push_back(makeObject(rightSphere, glass));
-        ret.push_back(makeObject(Sphere3, glass));
-        ret.push_back(makeObject(Sphere4, mirror));
+        ret.push_back(makeObject(Sphere3, glass2));
+        ret.push_back(makeObject(Sphere4, mirror2));
 
         return ret;
     }();
