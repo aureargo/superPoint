@@ -240,8 +240,6 @@ glm::vec3 radiance (const Ray & r, const int radMax = 5)
     glm::vec3 pos = r.origin + r.direction*d;
     glm::vec3 n = obj->getNormal(pos);
 
-    //obj->reposition(pos, n, r.direction, false);
-
     glm::vec3 color = obj->direct(r, pos, n, scene::light);
     if(radMax > 0)
         color += obj->indirect(r, pos, n, scene::light, radMax-1);
@@ -339,14 +337,14 @@ int main (int, char **)
 
 			glm::vec3 d = glm::normalize(pp1 - pp0);
             glm::vec3 r(0,0,0);
-            const unsigned int nbRayons = 32;
+            const unsigned int nbRayons = 16;
             for(unsigned int i = 0; i < nbRayons;  i++)
             {
                 glm::vec3 d2(sample_cos(random_u(),random_u(), d));
                 d2 /= (float)w;
                 d2 += d;
                 d2 = glm::normalize(d2);
-                r += radiance (Ray{pp0, d2}, 100);
+                r += radiance (Ray{pp0, d2}, 50);
             //r += radiance (Ray{pp0, d}, 20);
             }
             r /= nbRayons;
