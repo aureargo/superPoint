@@ -30,6 +30,12 @@ namespace scene
     const Sphere leftSphere{16.5, glm::vec3 {27, 16.5, 47}};
     const Sphere rightSphere{16.5, glm::vec3 {73, 16.5, 78}};
 
+    /*******************************************************/
+    const Sphere Sphere3{6.5, glm::vec3 {27, 14.5, 108}};
+    const Sphere Sphere4{22.5, glm::vec3 {73, 64.5, 88}};
+
+    /*******************************************************/
+
     const glm::vec3 light{50, 70, 81.6};
 
     // Materials
@@ -37,7 +43,7 @@ namespace scene
     const Diffuse red{{.75, .25, .25}};
     const Diffuse blue{{.25, .25, .75}};
 
-    const Glass glass{{.9, .1, .9}, 1.33};
+    const Glass glass{{1,1,1},3.0};    //{{.9, .1, .9}, 1.33};
     const Mirror mirror{{.9, .9, .1}};
 
     // Objects
@@ -57,6 +63,8 @@ namespace scene
 
         ret.push_back(makeObject(leftSphere, mirror));
         ret.push_back(makeObject(rightSphere, glass));
+        ret.push_back(makeObject(Sphere3, glass));
+        ret.push_back(makeObject(Sphere4, mirror));
 
         return ret;
     }();

@@ -69,9 +69,11 @@ struct Glass    {
         float diffuse = fabsf(glm::dot(n, glm::normalize(l-p))) / pi;
         return (color * diffuse);*/
 
-        float specular = speculaire(cam, p, n, l);
-        return color*specular;
-        //return NOIR;
+        if(aLaLumiere(p,l))
+            return color*speculaire(cam, p, n, l);
+        else
+            //return color;
+            return NOIR;
         (void)cam;(void) p;   (void) n;   (void) l;
     }
 
@@ -100,9 +102,11 @@ struct Mirror   {
             return NOIR;
         float diffuse = fabsf(glm::dot(n, glm::normalize(l-p))) / pi;
         return (color * diffuse);*/
-        float specular = speculaire(cam, p, n, l);
-        return color*specular;
-        //return NOIR;
+        if(aLaLumiere(p,l))
+            return color*speculaire(cam, p, n, l);
+        else
+            //return color;
+            return NOIR;
         (void)cam;(void)p;(void)n;(void)l;
     }
 
