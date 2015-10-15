@@ -30,4 +30,6 @@ HEADERS += \
     scene.h \
     convolution.h \
     material.h \
-    primitive.h
+    primitive.h \
+    lumiere.h \
+    intersect.h
