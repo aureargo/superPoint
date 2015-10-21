@@ -1,5 +1,5 @@
-#ifndef LUMIERE_H
-#define LUMIERE_H
+#include "lumiere.h"
+
 
 struct lux   {
     float puissance;
@@ -26,6 +26,5 @@ struct lux   {
         if(this->pos.x > v.pos.x)		return false;
         return (this->pos.z < v.pos.z);
     }
-};
 
-#endif // LUMIERE_H
+};

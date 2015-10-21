@@ -1,24 +1,8 @@
-#ifndef OBJECT_H
-#define OBJECT_H
+#ifndef OBJECTTPL_H
+#define OBJECTTPL_H
 
-#include "material.h"
-
-/*************************************************************/
-
-struct Object
-{
-    virtual float intersect(const Ray &r) const = 0;
-    virtual glm::vec3 albedo() const = 0;
-    virtual glm::vec3 getNormal(const glm::vec3& pos) const = 0;
-    virtual glm::vec3 direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l) const = 0;
-    virtual glm::vec3 indirect(const Ray& c, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax = 10) const = 0;
-    virtual void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const = 0;
-    virtual Ray projection(const Ray& c, const glm::vec3& p, const glm::vec3& n) const = 0;
-    virtual glm::vec3 projection(const Ray& c, const glm::vec3& n) const = 0;
-
-    //cos(theta)/pi
-
-};
+#include "Object.h"
+#include "material/material.h"
 
 template<typename P, typename M>
 struct ObjectTpl final : Object
@@ -28,7 +12,7 @@ struct ObjectTpl final : Object
     {}
 
     float intersect(const Ray &ray) const	{
-        return ::intersect(ray, primitive);
+        return primitive.intersect(ray);
     }
 
     glm::vec3 albedo() const	{
@@ -58,7 +42,7 @@ struct ObjectTpl final : Object
 
     Ray projection(const Ray& c, const glm::vec3& p, const glm::vec3& n) const
     {
-        return material.projection(c, p, n);
+        return Ray(p, material.projection(c, n));    //material.projection(c, p, n);
     }
 
     glm::vec3 projection(const Ray& c, const glm::vec3& n) const
@@ -70,10 +54,13 @@ struct ObjectTpl final : Object
     const M &material;
 };
 
+/*************************************************************/
+
 
 template<typename P, typename M>
 std::unique_ptr<Object> makeObject(const P&p, const M&m){
     return std::unique_ptr<Object>(new ObjectTpl<P, M>{p, m});
 }
 
-#endif // OBJECT_H
+
+#endif // OBJECTTPL_H

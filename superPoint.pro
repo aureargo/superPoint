@@ -23,13 +23,34 @@ TEMPLATE = app
 
 
 SOURCES += \
-    smallpt.cpp
+    smallpt.cpp \
+    convolution.cpp \
+    main.cpp \
+    lumiere/lumiere.cpp \
+    Object/material/diffuse.cpp \
+    Object/material/glass.cpp \
+    Object/material/mirror.cpp \
+    Object/primitive/triangle.cpp \
+    Object/primitive/sphere.cpp \
+    Object/primitive/box.cpp \
+    Object/primitive/mesh.cpp
 
 HEADERS += \
-    Object.h \
     scene.h \
     convolution.h \
-    material.h \
-    primitive.h \
-    lumiere.h \
-    intersect.h
+    global.h \
+    smallpt.h \
+    ray.h \
+    Object/ObjectTpl.h \
+    Object/Object.h \
+    lumiere/lumiere.h \
+    lumiere/lux.h \
+    Object/material/diffuse.h \
+    Object/material/glass.h \
+    Object/material/mirror.h \
+    Object/primitive/triangle.h \
+    Object/primitive/sphere.h \
+    Object/primitive/box.h \
+    Object/primitive/mesh.h \
+    Object/primitive/primitive.h \
+    Object/material/material.h

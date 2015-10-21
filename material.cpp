@@ -1,17 +1,4 @@
-#ifndef MATERIAL_H
-#define MATERIAL_H
-
-
-
-#define NOIR glm::vec3(0.f, 0.f, 0.f)
-
-bool aLaLumiere(const glm::vec3& p, const glm::vec3& l);
-glm::vec3 radiance (const Ray & r, int radMax);
-bool refract(glm::vec3 i, glm::vec3 n, float ior, glm::vec3 &wo);
-glm::vec3 reflect(const glm::vec3& i, const glm::vec3& n);
-glm::vec3 sample_cos(const float u, const float v, const glm::vec3& n);
-float random_u();
-glm::vec3 sample_sphere(float r, float u, float v, float &pdf, const glm::vec3& normal);
+#include "material.h"
 
 
 inline float speculaire(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, float brillance = 20)
@@ -163,8 +150,3 @@ glm::vec3 albedo(const T &t)
 {
     return t.color;
 }
-
-
-
-
-#endif // MATERIAL_H

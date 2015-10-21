@@ -1,5 +1,5 @@
-#ifndef PRIMITIVE_H
-#define PRIMITIVE_H
+#include "primitive.h"
+
 
 struct Ray
 {
@@ -127,17 +127,8 @@ struct Mesh
         return;
         (void) n;   (void) dir;
     }
-
-
 };
 
 
 /*********************************************************************************************/
 
-
-
-
-
-
-
-#endif // PRIMITIVE_H

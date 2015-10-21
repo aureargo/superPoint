@@ -1,7 +1,12 @@
 #ifndef SCENE_H
 #define SCENE_H
 
-#include "material.h"
+#include "global.h"
+#include "Object/ObjectTpl.h"
+#include "Object/primitive/triangle.h"
+
+class Diffuse;
+struct Object;
 
 namespace scene
 {
@@ -57,7 +62,7 @@ namespace scene
     // Note: this is a rather convoluted way of initialising a vector of unique_ptr ;)
     const std::vector<std::unique_ptr<Object>> objects = [] (){
         std::vector<std::unique_ptr<Object>> ret;
-        /*ret.push_back(makeObject(backWallA, white));
+        ret.push_back(makeObject(backWallA, white));
         ret.push_back(makeObject(backWallB, white));
         ret.push_back(makeObject(topWallA, yellow));
         ret.push_back(makeObject(topWallB, yellow));
@@ -72,9 +77,9 @@ namespace scene
         ret.push_back(makeObject(rightSphere, glass));
         ret.push_back(makeObject(Sphere3, glass2));
         ret.push_back(makeObject(Sphere4, mirror2));
-        ret.push_back(makeObject(Sphere5, white));*/
+        ret.push_back(makeObject(Sphere5, white));
 
-        ret.push_back(makeObject(mesh1, yellow));
+        //ret.push_back(makeObject(mesh1, yellow));
 
         return ret;
     }();
