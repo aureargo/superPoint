@@ -26,14 +26,14 @@ SOURCES += \
     smallpt.cpp \
     convolution.cpp \
     main.cpp \
-    lumiere/lumiere.cpp \
     Object/material/diffuse.cpp \
     Object/material/glass.cpp \
     Object/material/mirror.cpp \
     Object/primitive/triangle.cpp \
     Object/primitive/sphere.cpp \
     Object/primitive/box.cpp \
-    Object/primitive/mesh.cpp
+    Object/primitive/mesh.cpp \
+    lumiere/lux.cpp
 
 HEADERS += \
     scene.h \

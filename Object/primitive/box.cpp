@@ -99,3 +99,14 @@ float Box::intersect(const Ray & r) const
 
     return true;
 }
+
+void Box::merge(const glm::vec3& p)
+{
+    for(int i = 0;  i < 3;  i++)
+    {
+        if(min[i] > p[i])
+            min[i] = p[i];
+        if(max[i] < p[i])
+            max[i] = p[i];
+    }
+}

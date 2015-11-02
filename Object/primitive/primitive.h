@@ -7,9 +7,9 @@
 class Primitive
 {
 public:
-    virtual glm::vec3 getNormal(const glm::vec3& p) const = 0;
-    virtual void reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const = 0;
-    virtual float intersect(const Ray& ray) const = 0;
+    virtual glm::vec3 getNormal(const glm::vec3& p, const glm::vec3& dir, int id) const = 0;
+    virtual void reposition(glm::vec3& pos, const glm::vec3& n, bool out) const = 0;
+    virtual float intersect(const Ray& ray, int& id) const = 0;
 };
 
 

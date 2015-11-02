@@ -9,18 +9,20 @@
 // t is defined as the abscisce along the ray (i.e
 //             p = r.o + t * r.d
 // id is the id of the intersected object
-Object* intersect (const Ray & r, float &t)
+Object* intersect (const Ray & r, float &t, int& id)
 {
     t = noIntersect;
     Object *ret = nullptr;
 
     for(auto &object : scene::objects)
     {
-        float d = object->intersect(r);
+        int i;
+        float d = object->intersect(r, i);
         //if (isIntersect(d) && d < t)
         if (d < t && d > NEAR_INTERSECT)  //pas d>=0.0f pour permettre la diffusion à partir d'un objet de la scène sans que la fonction retourne le même objet
         {
             t = d;
+            id = i;
             ret = object.get();
         }
     }
@@ -34,15 +36,19 @@ int main (int, char **)
     QTime timer;
     timer.start();
 
-    int w = 768, h = 768;
+    //int w = 768, h = 768;
+    int w = 640, h = 640;
     std::vector<glm::vec3> colors(w * h, glm::vec3{0.f, 0.f, 0.f});
 
     Ray cam {{50, 52, 295.6}, glm::normalize(glm::vec3{0, -0.042612, -1})};	// cam pos, dir
     float near = 1.f;
     float far = 10000.f;
 
-    std::vector<glm::vec3> lights;
+    std::vector<Lumiere> lights;
     lights.push_back(scene::light);
+    lights.push_back(scene::light2);
+    lights.push_back(scene::light3);
+    lights.push_back(scene::light4);
 
     /*std::vector<lux> lums;
     lums.reserve(10000);
@@ -106,22 +112,26 @@ int main (int, char **)
 
 
 
-    const unsigned int  antiAliasing = 64,
+    const unsigned int  antiAliasing = 16,
                         recursionRayon = 7; //7 est bien
     int prct, prct2 = -1;
-    //#pragma omp parallel for
+    int py = 0;
+
+    #ifdef QT_NO_DEBUG
+    #pragma omp parallel for
+    #endif
     for (int y = 0; y < h; y++)
     {
-        prct = 100 * y / (h - 1);
+        prct = 100 * py / (h - 1);
         if(prct != prct2)
         {
             std::cerr << "\rRendering: " << prct << "%";
             prct2 = prct;
         }
 
-        #ifdef QT_NO_DEBUG
+        /*#ifdef QT_NO_DEBUG
         #pragma omp parallel for
-        #endif
+        #endif*/
         for (unsigned short x = 0; x < w; x++)
         {
             glm::vec4 p0 = screenToRay * glm::vec4{float(x), float(h - y), 0.f, 1.f};
@@ -132,24 +142,26 @@ int main (int, char **)
 
             glm::vec3 d = glm::normalize(pp1 - pp0);
             glm::vec3 r(0,0,0);
-            for(unsigned int i = 0; i < antiAliasing;  i++)
-            {
-                glm::vec3 d2;
-                if(antiAliasing < 2)
-                    d2 = d;
-                else
-                {
-                    d2 = sample_cos(random_u(),random_u(), d);
-                    d2 /= glm::vec3(w,h,w*h);
-                    d2 += d;
-                    d2 = glm::normalize(d2);
-                }
-                for(const auto& l : lights)
+
+            for(unsigned int i = 0; i < antiAliasing;  i++) {
+                for(const auto& l : lights) {
+                    glm::vec3 d2;
+                    if(antiAliasing == 1)
+                        d2 = d;
+                    else
+                    {
+                        d2 = sample_cos(random_u(),random_u(), d);
+                        d2 *= 0.001f;//glm::vec3(w,h,w*h);
+                        d2 += d;
+                        d2 = glm::normalize(d2);
+                    }
                     r += radiance (Ray(pp0, d2), l, recursionRayon);
+                }
             }
             r /= (antiAliasing*lights.size());
             colors[y * w + x] += glm::clamp(r, glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
         }
+        py++;
     }
 
     //convolution

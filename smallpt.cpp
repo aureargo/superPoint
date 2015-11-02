@@ -104,51 +104,51 @@ glm::vec3 sample_sphere(float r, float u, float v, float &pdf, const glm::vec3& 
 }
 
 
-float speculaire(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, float brillance)
+float speculaire(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l, float brillance)
 {
-    const glm::vec3 R = reflect(glm::normalize(l-p),n);
+    const glm::vec3 R = reflect(glm::normalize(l.origin-p),n);
     return std::pow(fabsf(glm::dot(R,-cam.direction)), brillance);
 }
 
-glm::vec3 monteCarlo(const glm::vec3& l, const glm::vec3& p)
+glm::vec3 monteCarlo(const Lumiere& l, const glm::vec3& p)
 {
-    return l+4.f*sample_cos(random_u(),random_u(),glm::normalize(l-p));
+    return l.origin+l.rayonMonteCarlo*sample_cos(random_u(),random_u(),glm::normalize(p-l.origin));
 }
 
 struct Object;
-Object* intersect (const Ray & r, float &t);
+Object* intersect (const Ray & r, float &t, int& id);
 
-bool aLaLumiere(const glm::vec3& p, const glm::vec3& l)
+bool aLaLumiere(const glm::vec3& p, const Lumiere& l)
 {
-    float sqrdist = glm::distance2(p,l);
+    float sqrdist = glm::distance2(p,l.origin);
 
-    Ray rl = {l, normalize(p-l)};
+    Ray rl(l.origin, normalize(p-l.origin));
 
-    float d2;
-    const Object* obj2 = intersect(rl, d2);
+    float d2;   int id;
+    const Object* obj2 = intersect(rl, d2, id);
 
     if(obj2 == nullptr || fabsf(d2*d2-sqrdist) > SQR_PRECISION)
         return false;
     return true;
 }
 
-glm::vec3 radiance (const Ray & r, const glm::vec3 &l, const int radMax)
+glm::vec3 radiance (const Ray & r, const Lumiere &l, const int radMax)
 {
-    float d;
-    const Object* obj = intersect(r, d);
+    float d;    int id;
+    const Object* obj = intersect(r, d, id);
     if(obj == nullptr)
         return NOIR;
 
 
 
     glm::vec3 pos = r.origin + r.direction*d;
-    glm::vec3 n = obj->getNormal(pos);
+    glm::vec3 n = obj->getNormal(pos, r.direction, id);
 
     glm::vec3 color = obj->direct(r, pos, n, l);
     if(radMax > 0)
         color += obj->indirect(r, pos, n, l, radMax-1);
 
-    return color;
+    return color*l.color;
 }
 
 

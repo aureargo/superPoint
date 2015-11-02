@@ -40,12 +40,12 @@ glm::vec3 sample_sphere(float r, float u, float v, float &pdf, const glm::vec3& 
 
 
 
-float speculaire(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, float brillance);
-glm::vec3 monteCarlo(const glm::vec3& l, const glm::vec3& p);
+float speculaire(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l, float brillance = BRILLANCE);
+glm::vec3 monteCarlo(const Lumiere& l, const glm::vec3& p);
 
-bool aLaLumiere(const glm::vec3& p, const glm::vec3& l);
+bool aLaLumiere(const glm::vec3& p, const Lumiere& l);
 
-glm::vec3 radiance (const Ray & r, const glm::vec3& l, const int radMax = 5);
+glm::vec3 radiance (const Ray & r, const Lumiere& l, const int radMax = 5);
 
 
 #endif // SMALLPT_H

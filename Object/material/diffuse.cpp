@@ -3,27 +3,28 @@
 Diffuse::Diffuse(const glm::vec3& color):
         Material(color)
 {
+    brillance = 5;
 }
 
-glm::vec3 Diffuse::direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l) const
+glm::vec3 Diffuse::direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l) const
 {
-    if(!aLaLumiere(p,monteCarlo(l,p)))
+    if(!aLaLumiere(p, monteCarlo(l,p)))
         return NOIR;
     float diffuse = fabsf(glm::dot(n, glm::normalize(monteCarlo(l,p)-p))) / pi;
-    float specular = speculaire(cam, p, n, l);
-    return (color * (diffuse+specular));
+    float specular = speculaire(cam, p, n, l, brillance);
+    return (color * (l.absDiffus*absDiffus*diffuse+l.absSpeculaire*absSpeculaire*specular));
 }
 
-glm::vec3 Diffuse::indirect(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax) const
+glm::vec3 Diffuse::indirect(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l, int radMax) const
 {
     /*glm::vec3 newDir = reflect(-cam.direction,n);
-    glm::vec3 c = radiance(Ray{p, newDir}, radMax);
-    return c*color;*/
+    glm::vec3 c = radiance(Ray(p, newDir), l, radMax);
+    return c*l.absDiffus*absDiffus*color;*/
 
     glm::vec3 w = projection(cam, n);
     glm::vec3 c = radiance(Ray(p,w), l, radMax-1)*fabsf(glm::dot(n,w));      // fabsf(glm::dot(n,w)) == fabsf(glm::dot(-n,w))
 
-    return color*c;
+    return color*l.absDiffus*absDiffus*c;
     //return NOIR;
 }
 

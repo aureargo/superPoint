@@ -5,7 +5,7 @@ Glass::Glass(const glm::vec3& color, float refractProp):
 {
 }
 
-glm::vec3 Glass::direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l) const
+glm::vec3 Glass::direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l) const
 {
     /*if(!aLaLumiere(p,l))
         return NOIR;
@@ -13,16 +13,16 @@ glm::vec3 Glass::direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, 
     return (color * diffuse);*/
 
     if(aLaLumiere(p,monteCarlo(l,p)))
-        return color*speculaire(cam, p, n, l);
+        return color*l.absSpeculaire*absSpeculaire*speculaire(cam, p, n, l, brillance);
     else
         //return color;
         return NOIR;
 }
 
-glm::vec3 Glass::indirect(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const glm::vec3& l, int radMax) const
+glm::vec3 Glass::indirect(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l, int radMax) const
 {
     glm::vec3 c = radiance(Material::projection(cam, p, n), l, radMax);
-    return c*color;//glm::vec3(c.r*color.r, c.g*color.g, c.b*color.b);
+    return color*l.absDiffus*absDiffus*c;//glm::vec3(c.r*color.r, c.g*color.g, c.b*color.b);
     //return c;
 }
 

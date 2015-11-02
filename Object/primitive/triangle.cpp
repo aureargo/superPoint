@@ -6,19 +6,22 @@ Triangle::Triangle(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2
 {
 }
 
-glm::vec3 Triangle::getNormal(const glm::vec3& p) const    {
-    return glm::normalize(glm::cross(v1-v0, v2-v0));
-    (void) p;
-}
-void Triangle::reposition(glm::vec3& pos, const glm::vec3& n, const glm::vec3& dir, bool out) const
-{
+glm::vec3 Triangle::getNormal(const glm::vec3& p, const glm::vec3& dir, int id) const    {
+    glm::vec3 n = glm::normalize(glm::cross(v1-v0, v2-v0));
     if(distance2(n,dir) > 2)
-        out = !out;
-
-    (void) pos;
+        return -n;
+    return n;
+    (void) p;   (void) id;
+}
+void Triangle::reposition(glm::vec3& pos, const glm::vec3& n, bool out) const
+{
+    if(!out)
+        pos += n*0.0001f;
+    else
+        pos -= n*0.0001f;
 }
 
-float Triangle::intersect(const Ray & ray) const
+float Triangle::intersect(const Ray & ray, int& id) const
 {
     auto e1 = v1 - v0;
     auto e2 = v2 - v0;
@@ -44,4 +47,5 @@ float Triangle::intersect(const Ray & ray) const
         return noIntersect;
 
     return t;
+    (void) id;
 }

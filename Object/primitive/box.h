@@ -14,6 +14,8 @@ public:
     Box(const glm::vec3& min, const glm::vec3& max);
 
     float intersect(const Ray& ray) const;
+
+    void merge(const glm::vec3& p);
 };
 
 #endif // BOX_H
