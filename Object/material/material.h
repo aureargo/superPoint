@@ -23,7 +23,7 @@ public:
     const glm::vec3 color;
     float absDiffus = 1.f;
     float absSpeculaire = 1.f;
-    float brillance = 10;
+    float brillance = 20;
 
     Material(const glm::vec3& color = BLANC):
             color(color)

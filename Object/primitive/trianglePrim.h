@@ -1,18 +1,18 @@
-#ifndef TRIANGLE_H
-#define TRIANGLE_H
+#ifndef TRIANGLE_PRIM_H
+#define TRIANGLE_PRIM_H
 
 #include "primitive.h"
+#include "lib/triangle.h"
 
-class Triangle: public Primitive
+class TrianglePrim: public Triangle, public Primitive
 {
 public:
-    const glm::vec3 v0, v1, v2;
 
-    Triangle(const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2);
+    TrianglePrim(const glm::vec3& p0, const glm::vec3& p1, const glm::vec3& p2);
 
     glm::vec3 getNormal(const glm::vec3& p, const glm::vec3& dir, int id) const;
     void reposition(glm::vec3& pos, const glm::vec3& n, bool out) const;
     float intersect(const Ray &ray, int& id) const;
 };
 
-#endif // TRIANGLE_H
+#endif // TRIANGLE_PRIM_H

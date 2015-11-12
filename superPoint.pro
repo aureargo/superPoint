@@ -29,11 +29,13 @@ SOURCES += \
     Object/material/diffuse.cpp \
     Object/material/glass.cpp \
     Object/material/mirror.cpp \
-    Object/primitive/triangle.cpp \
     Object/primitive/sphere.cpp \
-    Object/primitive/box.cpp \
+    lib/box.cpp \
     Object/primitive/mesh.cpp \
-    lumiere/lux.cpp
+    lumiere/lux.cpp \
+    Object/primitive/trianglePrim.cpp \
+    lib/triangle.cpp \
+    lib/bvh/bvh.cpp
 
 HEADERS += \
     scene.h \
@@ -48,9 +50,12 @@ HEADERS += \
     Object/material/diffuse.h \
     Object/material/glass.h \
     Object/material/mirror.h \
-    Object/primitive/triangle.h \
     Object/primitive/sphere.h \
-    Object/primitive/box.h \
+    lib/box.h \
     Object/primitive/mesh.h \
     Object/primitive/primitive.h \
-    Object/material/material.h
+    Object/material/material.h \
+    Object/primitive/trianglePrim.h \
+    lib/bvh/triangleId.h \
+    lib/triangle.h \
+    lib/bvh/bvh.h

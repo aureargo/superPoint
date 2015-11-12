@@ -4,7 +4,6 @@ Mesh::Mesh(const glm::vec3 &center, const char* obj):
         center(center)
 {
     box = Box();
-    glm::vec3 minVal(FLT_MAX, FLT_MAX, FLT_MAX), maxVal(FLT_MIN, FLT_MIN, FLT_MIN);
     FILE* f = fopen(obj, "r");
     while (!feof(f)) {
         char line[255];
@@ -35,7 +34,6 @@ Mesh::Mesh(const glm::vec3 &center, const char* obj):
             normalIds.push_back(k1-1);
             normalIds.push_back(k2-1);
         }
-
     }
 
     //boundingSphere.C = 0.5*(minVal+maxVal);
@@ -51,6 +49,7 @@ glm::vec3 Mesh::getNormal(const glm::vec3& p, const glm::vec3& dir, int id) cons
     return glm::normalize(n);
     //Triangle t{vertices[faces[id]],vertices[faces[id+1]],vertices[faces[id+2]]};
     //return t.getNormal(p, dir, id);
+    (void) dir;
 }
 void Mesh::reposition(glm::vec3& pos, const glm::vec3& n, bool out) const
 {
@@ -61,22 +60,30 @@ void Mesh::reposition(glm::vec3& pos, const glm::vec3& n, bool out) const
 }
 
 
-float Mesh::intersect(const Ray & ray, int &id) const
+float Mesh::intersect(const Ray& ray, int &id) const
 {
     if(box.intersect(ray) == noIntersect)
         return noIntersect;
 
     float min = noIntersect;
-    for(unsigned int i = 0;  i < faces.size();   i+=3)
+
+    if(!haveBVH)
     {
-        Triangle t{vertices[faces[i]],vertices[faces[i+1]],vertices[faces[i+2]]};
-        int id2;
-        float val = t.intersect(ray, id2);
-        if(val < min)
+        for(unsigned int i = 0;  i < faces.size();   i+=3)
         {
-            min = val;
-            id = i;
+            TrianglePrim t{vertices[faces[i]],vertices[faces[i+1]],vertices[faces[i+2]]};
+            int id2;
+            float val = t.intersect(ray, id2);
+            if(val < min)
+            {
+                min = val;
+                id = i;
+            }
         }
+    }
+    else
+    {
+        min = bvh.intersect(ray, this->faces, this->vertices, id);
     }
     return min;
 }
@@ -159,4 +166,11 @@ void Mesh::rotate(float angle, const glm::vec3& axe)
         rotate2(n, angle, axe);
         n = glm::normalize(n);
     }
+}
+
+
+void Mesh::updateBVH(int nbTriMax)
+{
+    bvh = BVH(faces, vertices, nbTriMax);
+    haveBVH = true;
 }

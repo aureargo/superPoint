@@ -3,14 +3,14 @@
 Diffuse::Diffuse(const glm::vec3& color):
         Material(color)
 {
-    brillance = 5;
 }
 
 glm::vec3 Diffuse::direct(const Ray& cam, const glm::vec3& p, const glm::vec3& n, const Lumiere& l) const
 {
-    if(!aLaLumiere(p, monteCarlo(l,p)))
+    const glm::vec3 l2 = monteCarlo(l,p);
+    if(!aLaLumiere(p, l2))
         return NOIR;
-    float diffuse = fabsf(glm::dot(n, glm::normalize(monteCarlo(l,p)-p))) / pi;
+    float diffuse = fabsf(glm::dot(n, glm::normalize(l2-p))) / pi;
     float specular = speculaire(cam, p, n, l, brillance);
     return (color * (l.absDiffus*absDiffus*diffuse+l.absSpeculaire*absSpeculaire*specular));
 }

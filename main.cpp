@@ -46,8 +46,8 @@ int main (int, char **)
 
     std::vector<Lumiere> lights;
     lights.push_back(scene::light);
-    lights.push_back(scene::light2);
-    lights.push_back(scene::light3);
+    //lights.push_back(scene::light2);
+    //lights.push_back(scene::light3);
     lights.push_back(scene::light4);
 
     /*std::vector<lux> lums;
@@ -112,7 +112,7 @@ int main (int, char **)
 
 
 
-    const unsigned int  antiAliasing = 16,
+    const unsigned int  antiAliasing = 32,
                         recursionRayon = 7; //7 est bien
     int prct, prct2 = -1;
     int py = 0;
@@ -128,6 +128,9 @@ int main (int, char **)
             std::cerr << "\rRendering: " << prct << "%";
             prct2 = prct;
         }
+        else
+            std::cerr << ". \b";
+
 
         /*#ifdef QT_NO_DEBUG
         #pragma omp parallel for
@@ -143,10 +146,11 @@ int main (int, char **)
             glm::vec3 d = glm::normalize(pp1 - pp0);
             glm::vec3 r(0,0,0);
 
-            for(unsigned int i = 0; i < antiAliasing;  i++) {
+            int antia = std::ceil((float)antiAliasing/lights.size());
+            for(int i = 0; i < antia;  i++) {
                 for(const auto& l : lights) {
                     glm::vec3 d2;
-                    if(antiAliasing == 1)
+                    if(antia == 1)
                         d2 = d;
                     else
                     {
@@ -158,7 +162,7 @@ int main (int, char **)
                     r += radiance (Ray(pp0, d2), l, recursionRayon);
                 }
             }
-            r /= (antiAliasing*lights.size());
+            r /= antia*lights.size();
             colors[y * w + x] += glm::clamp(r, glm::vec3(0.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
         }
         py++;

@@ -17,7 +17,7 @@ public:
 
 
 #include "sphere.h"
-#include "triangle.h"
+#include "trianglePrim.h"
 #include "mesh.h"
 
 

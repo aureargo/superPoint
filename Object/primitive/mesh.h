@@ -2,16 +2,19 @@
 #define MESH_H
 
 #include "primitive.h"
-#include "box.h"
+#include "lib/box.h"
+#include "lib/bvh/bvh.h"
 
 class Mesh: public Primitive
 {
 public:
     std::vector<glm::vec3> vertices, normals;
     std::vector<int> faces, normalIds;
+    BVH bvh;
 
     Box box;
     glm::vec3 center;
+    bool haveBVH = false;
 
     Mesh(const glm::vec3 &center, const char* obj);
 
@@ -24,6 +27,7 @@ public:
     void scale(float s);
     void scale(const glm::vec3& s);
     void rotate(float angle, const glm::vec3& axe);
+    void updateBVH(int nbTriMax = 100);
 };
 
 #endif // MESH_H

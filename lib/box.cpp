@@ -18,8 +18,20 @@ Box::Box(const glm::vec3& min, const glm::vec3& max):
 
 float Box::intersect(const Ray & r) const
 {
+    float distanceMin, distanceMax;
+    if(intersect(r, distanceMin, distanceMax))
+        return distanceMin;
+    return noIntersect;
+}
+bool Box::intersect(const Ray & r, float& distanceMin, float& distanceMax) const
+{
+    if(this->inOut(r.origin))  {
+        distanceMin = 0;
+        distanceMax = intersectIn(r);
+        return true;
+    }
+
     float tmin, tmax, tymin, tymax, tzmin, tzmax;
-    float distanceMin = noIntersect;
 
     float div;
 
@@ -54,7 +66,7 @@ float Box::intersect(const Ray & r) const
     }
 
     if( (tmin > tymax) || (tymin > tmax) )
-        return noIntersect;
+        return false;
 
     if(tymin > tmin)
         tmin = tymin;
@@ -79,7 +91,7 @@ float Box::intersect(const Ray & r) const
     }
 
     if( (tmin > tzmax) || (tzmin > tmax) )
-        return noIntersect;
+        return false;
 
     if(tzmin > tmin)
         tmin = tzmin;
@@ -89,14 +101,60 @@ float Box::intersect(const Ray & r) const
 
     if(tmin>=0)
         distanceMin = tmin;
-    return distanceMin;
-    //else
-    //    return false; //inutile apparament
+    else
+        return false; //inutile apparament
     //distanceMin += 0.002;
 
-    //if(tmax>0)
-    //    distanceMax = tmax;
+    if(tmax>0)
+        distanceMax = tmax;
 
+    return true;
+}
+
+inline float Box::intersectIn(const Ray& r) const
+{
+    float tmax, tymax, tzmax;
+
+    if(r.direction.x == 0)
+        tmax = FLT_MAX;
+    else if(r.direction.x > 0)
+        tmax = (max.x - r.origin.x) / r.direction.x;
+    else
+        tmax = (min.x - r.origin.x) / r.direction.x;
+
+    if(r.direction.y == 0)
+        tymax = FLT_MAX;
+    else if(r.direction.y >= 0)
+        tymax = (max.y - r.origin.y) / r.direction.y;
+    else
+        tymax = (min.y - r.origin.y) / r.direction.y;
+
+    if(tymax < tmax)
+        tmax = tymax;
+
+
+    if(r.direction.z == 0)
+        return tmax;
+    else if(r.direction.z > 0)
+        tzmax = (max.z - r.origin.z) / r.direction.z;
+    else
+        tzmax = (min.z - r.origin.z) / r.direction.z;
+
+    if(tzmax < tmax)
+        return tzmax;
+    return tmax;
+}
+
+
+bool Box::inOut(const glm::vec3& p) const
+{
+    for(int i = 0;  i < 3;  i++)
+    {
+        if(p[i] < min[i])
+            return false;
+        if(p[i] > max[i])
+            return false;
+    }
     return true;
 }
 
@@ -109,4 +167,31 @@ void Box::merge(const glm::vec3& p)
         if(max[i] < p[i])
             max[i] = p[i];
     }
+}
+
+void Box::merge(const Box& box)
+{
+    for(int i = 0;  i < 3;  i++)
+    {
+        if(min[i] > box.min[i])
+            min[i] = box.min[i];
+        if(max[i] < box.max[i])
+            max[i] = box.max[i];
+    }
+}
+
+
+int Box::axeMax() const
+{
+    float   x = max.x - min.x,
+            y = max.y - min.y,
+            z = max.z - min.z;
+    if(x >= y)   {
+        if(x >= z)  return 0;
+        else        return 2;
+    }
+    else if(y >= z)
+        return 1;
+    else
+        return 2;
 }

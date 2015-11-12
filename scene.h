@@ -14,24 +14,24 @@ namespace scene
     // Primitives
 
     // Left Wall
-    const Triangle leftWallA{{0, 0, 0}, {0, 100, 0}, {0, 0, 150}};
-    const Triangle leftWallB{{0, 100, 150}, {0, 100, 0}, {0, 0, 150}};
+    const TrianglePrim leftWallA{{0, 0, 0}, {0, 100, 0}, {0, 0, 150}};
+    const TrianglePrim leftWallB{{0, 100, 150}, {0, 100, 0}, {0, 0, 150}};
 
     // Right Wall
-    const Triangle rightWallA{{100, 0, 0}, {100, 100, 0}, {100, 0, 150}};
-    const Triangle rightWallB{{100, 100, 150}, {100, 100, 0}, {100, 0, 150}};
+    const TrianglePrim rightWallA{{100, 0, 0}, {100, 100, 0}, {100, 0, 150}};
+    const TrianglePrim rightWallB{{100, 100, 150}, {100, 100, 0}, {100, 0, 150}};
 
     // Back wall
-    const Triangle backWallA{{0, 0, 0}, {100, 0, 0}, {100, 100, 0}};
-    const Triangle backWallB{{0, 0, 0}, {0, 100, 0}, {100, 100, 0}};
+    const TrianglePrim backWallA{{0, 0, 0}, {100, 0, 0}, {100, 100, 0}};
+    const TrianglePrim backWallB{{0, 0, 0}, {0, 100, 0}, {100, 100, 0}};
 
     // Bottom Floor
-    const Triangle bottomWallA{{0, 0, 0}, {100, 0, 0}, {100, 0, 150}};
-    const Triangle bottomWallB{{0, 0, 0}, {0, 0, 150}, {100, 0, 150}};
+    const TrianglePrim bottomWallA{{0, 0, 0}, {100, 0, 0}, {100, 0, 150}};
+    const TrianglePrim bottomWallB{{0, 0, 0}, {0, 0, 150}, {100, 0, 150}};
 
     // Top Ceiling
-    const Triangle topWallA{{0, 100, 0}, {100, 100, 0}, {0, 100, 150}};
-    const Triangle topWallB{{100, 100, 150}, {100, 100, 0}, {0, 100, 150}};
+    const TrianglePrim topWallA{{0, 100, 0}, {100, 100, 0}, {0, 100, 150}};
+    const TrianglePrim topWallB{{100, 100, 150}, {100, 100, 0}, {0, 100, 150}};
 
     const Sphere leftSphere{16.5, glm::vec3 {27, 16.5, 47}};
     const Sphere rightSphere{16.5, glm::vec3 {73, 16.5, 78}};
@@ -43,17 +43,18 @@ namespace scene
     /*******************************************************/
 
     const Mesh mesh1 = [](){
-        Mesh ret(glm::vec3(50,0,70), "./Beautiful Girl.obj");
+        Mesh ret(glm::vec3(50,0,75), "./Beautiful Girl.obj");
         ret.rotate(pi,glm::vec3(0,1,0));
-        ret.scale(0.7);
+        //ret.scale(0.5);
+        ret.updateBVH(400);
         return ret;
     }();
 
     /*******************************************************/
 
     const Lumiere light({50.0, 70.0, 81.6});
-    const Lumiere light2({50.0, 30.0, 150.0}, {.5,1.0,0.1});
-    const Lumiere light3({20.0, 50.0, 75.0}, {1.0,0.1,0.5});
+    const Lumiere light2({50.0, 30.0, 150.0}, {.5,1.0,0.1},0.2);
+    const Lumiere light3({20.0, 50.0, 75.0}, {1.0,0.1,0.5},0.1);
     const Lumiere light4({80.0, 50.0, 75.0}, {0.1,0.5,1.0});
 
     // Materials
