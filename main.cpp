@@ -37,7 +37,7 @@ int main (int, char **)
     timer.start();
 
     //int w = 768, h = 768;
-    int w = 640, h = 640;
+    int w = 360, h = 360;
     std::vector<glm::vec3> colors(w * h, glm::vec3{0.f, 0.f, 0.f});
 
     Ray cam {{50, 52, 295.6}, glm::normalize(glm::vec3{0, -0.042612, -1})};	// cam pos, dir
@@ -112,8 +112,8 @@ int main (int, char **)
 
 
 
-    const unsigned int  antiAliasing = 32,
-                        recursionRayon = 7; //7 est bien
+    const unsigned int  antiAliasing = 1,
+                        recursionRayon = 0; //7 est bien
     int prct, prct2 = -1;
     int py = 0;
 
@@ -129,7 +129,7 @@ int main (int, char **)
             prct2 = prct;
         }
         else
-            std::cerr << ". \b";
+            std::cerr << ".  \b\b";
 
 
         /*#ifdef QT_NO_DEBUG

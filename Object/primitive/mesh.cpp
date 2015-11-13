@@ -82,9 +82,8 @@ float Mesh::intersect(const Ray& ray, int &id) const
         }
     }
     else
-    {
-        min = bvh.intersect(ray, this->faces, this->vertices, id);
-    }
+        min = bvh->intersect(ray, this->faces, this->vertices, id);
+
     return min;
 }
 
@@ -171,6 +170,6 @@ void Mesh::rotate(float angle, const glm::vec3& axe)
 
 void Mesh::updateBVH(int nbTriMax)
 {
-    bvh = BVH(faces, vertices, nbTriMax);
+    bvh = make_bvh_nb(faces, vertices, nbTriMax);
     haveBVH = true;
 }

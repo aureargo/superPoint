@@ -3,14 +3,14 @@
 
 #include "primitive.h"
 #include "lib/box.h"
-#include "lib/bvh/bvh.h"
+#include "lib/bvh/bvh_nb_noeud.h"
 
 class Mesh: public Primitive
 {
 public:
     std::vector<glm::vec3> vertices, normals;
     std::vector<int> faces, normalIds;
-    BVH bvh;
+    BVH* bvh;
 
     Box box;
     glm::vec3 center;

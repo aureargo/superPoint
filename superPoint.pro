@@ -35,7 +35,9 @@ SOURCES += \
     lumiere/lux.cpp \
     Object/primitive/trianglePrim.cpp \
     lib/triangle.cpp \
-    lib/bvh/bvh.cpp
+    lib/bvh/bvh_nb_noeud.cpp \
+    lib/bvh/bvh_feuille.cpp \
+    lib/bvh/bvh_noeud.cpp
 
 HEADERS += \
     scene.h \
@@ -58,4 +60,7 @@ HEADERS += \
     Object/primitive/trianglePrim.h \
     lib/bvh/triangleId.h \
     lib/triangle.h \
-    lib/bvh/bvh.h
+    lib/bvh/bvh.h \
+    lib/bvh/bvh_nb_noeud.h \
+    lib/bvh/bvh_feuille.h \
+    lib/bvh/bvh_noeud.h
